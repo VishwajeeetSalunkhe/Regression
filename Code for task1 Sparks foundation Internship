@@ -1,0 +1,69 @@
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+%matplotlib inline
+
+#reading data
+data = pd.read_csv("http://bit.ly/w-data")
+data.head()
+
+
+data.shape
+data.describe()
+
+data.plot(x='Hours',y='Scores',style='o')
+plt.title('Hours vs Percentage')
+plt.xlabel('Hours Studied')
+plt.ylabel('Scores Obtained')
+plt.show()
+
+#dividing tthe data into dependent  and independent variable
+x = data.iloc[:,:-1].values
+y = data.iloc[:,1].values
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.3, random_state=0)
+
+from sklearn.linear_model import LinearRegression
+reg=LinearRegression()
+#fitting the model
+reg.fit(x_train, y_train) 
+
+
+#visualising Linear regression
+l=reg.coef_*x+reg.intercept_
+#plotting testing data
+plt.scatter(x,y)
+plt.plot(x,l)
+plt.show()
+
+
+#retrieving intercept and coefficient
+print("Intercept is:", reg.intercept_)
+print("coefficient is:",reg.coef_)
+
+#predicting on testing data
+y_pred = reg.predict(x_test)
+
+y_pred#comparing actual vs predicted values for x_test
+df = pd.DataFrame({'Actual' : y_test, 'Predicted':y_pred})
+df
+
+#visualising predicted and actual values
+plt.scatter(x_test, y_test)
+plt.xlabel('X Values')
+plt.ylabel('Y Values')
+plt.title('Testing data actual values')
+plt.show()
+
+plt.scatter(x_test, y_pred, marker='v')
+plt.xlabel('X Values')
+plt.ylabel('Y Values')
+plt.title('Testing data predicted values')
+plt.show()
+
+from sklearn import metrics
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
+print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
+print('Root Mean Square Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
